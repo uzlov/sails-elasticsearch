@@ -1,107 +1,60 @@
-# waterline-elasticsearch
+# sails-elasticsearch
 
-[![Join the chat at https://gitter.im/mie00/sails-elasticsearch](https://badges.gitter.im/mie00/sails-elasticsearch.svg)](https://gitter.im/mie00/sails-elasticsearch?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+Provides easy access to Elasicsearch` from Sails.js & Waterline.
 
-### Installation
+This module is a Sails/Waterline community adapter.  Its goal is to provide a set of declarative interfaces, conventions, and best-practices for integrating with the estest database/service.
+
+Strict adherence to an adapter specification enables the (re)use of built-in generic test suites, standardized documentation, reasonable expectations around the API for your users, and overall, a more pleasant development experience for everyone.
+
+
+## Installation
 
 To install this adapter, run:
 
 ```sh
-$ npm install sails-elastic
+$ npm install git+https://github.com/uzlov/sails-elasticsearch.git#1.0.1
 ```
 
+Then [connect the adapter](https://sailsjs.com/documentation/reference/configuration/sails-config-datastores) to one or more of your app's datastores.
 
-### Configuration
+## Usage
 
-#### config/connections.js
+Visit [Models & ORM](https://sailsjs.com/docs/concepts/models-and-orm) in the docs for more information about using models, datastores, and adapters in your app/microservice.
 
-```js
-{
-    adapter: 'sails-elastic',
-    hosts: ['http://127.0.0.1:9200'],
-    keepAlive: false,
-    sniffOnStart: true,
-    maxRetries: 10,
-    deadTimeout: 40000,
-    sniffOnConnectionFault: true,
-    apiVersion: '2.0'
-},
-```
-#### Models
+## Questions?
 
-##### Attributes
+See [Extending Sails > Adapters > Custom Adapters](https://sailsjs.com/documentation/concepts/extending-sails/adapters/custom-adapters) in the [Sails documentation](https://sailsjs.com/documentation), or check out [recommended support options](https://sailsjs.com/support).
 
-sails-elastic does not support `attributes` inside the model. It gets its attributes from another attribute in the model called `elasticSearch`. There you can tell elasticsearch how to create the index. You can find more information [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html).
+<a href="https://sailsjs.com" target="_blank" title="Node.js framework for building realtime APIs."><img src="https://github-camo.global.ssl.fastly.net/9e49073459ed4e0e2687b80eaf515d87b0da4a6b/687474703a2f2f62616c64657264617368792e6769746875622e696f2f7361696c732f696d616765732f6c6f676f2e706e67" width=60 alt="Sails.js logo (small)"/></a>
 
-```js
-// person model
-module.exports = {
-    elasticSearch: {
-        mappings: {
-            person: {
-                properties: {
-                    name: {
-                        type: "string",
-                    },
-                    adress: {
-                        type: "string",
-                        index: "not_analyzed"
-                    },
-                    age: {
-                        type: "integer",
-                    },
-                }
-            }
-        }
-    }
-};
-```
 
-##### Multiple adapters
+## Compatibility
 
-To use multiple adapters for the same model. you have to make elasticsearch the last one, and manually sync create, update, destroy between adapters
+This adapter implements the following methods:
 
-```js
-module.exports = {
-    connection: ['mongoConnection','elasticConnection'],
-    elasticSearch: {/*...*/},
-    attributes: {/*...*/},
-    afterCreate: function (value, callback){
-        this.createIndex(value, callback)
-    },
-    afterUpdate: function (value, callback){
-        this.updateIndex(value.id, value, callback)
-    },
-    afterDestroy: function (value, callback){
-        this.destroyIndex(value.id, callback)
-    },
-};
-```
+| Method               | Status            | Category      |
+|:---------------------|:------------------|:--------------|
+| registerDatastore    | Ready             | LIFECYCLE     |
+| teardown             | Ready             | LIFECYCLE     |
+| drop                 | Ready             | LIFECYCLE?    |
+| create               | Planned           | DML           |
+| createEach           | Planned           | DML           |
+| update               | Planned           | DML           |
+| destroy              | Planned           | DML           |
+| find                 | Planned           | DQL           |
+| count                | Planned           | DQL           |
+| sum                  | Planned           | DQL           |
+| avg                  | Planned           | DQL           |
+| define               | Planned           | DDL           |
+| join                 | _**???**_         | DQL           |
+| setSequence          | _**???**_         | DDL           |
 
-> Warning: for sails v11.0 and earlier, connection attribute used to be defined with an 's'.
 
-### API
+## License
 
-This adapter exposes the following methods (you can pass a callback function to them or use them as [bluebird](https://github.com/petkaantonov/bluebird) promises):
+This Elasticsearch adapter is available under the **MIT license**.
 
-* `search(criteria, callback)`
+As for [Waterline](http://waterlinejs.org) and the [Sails framework](https://sailsjs.com)?  They're free and open-source under the [MIT License](https://sailsjs.com/license).
 
-* `createIndex(value, callback)` === `create(value, callback)`
 
-* `updateIndex(id, value, callback)` === `update(id, value, callback)`
-
-* `destroyIndex(id, callback)` === `destroy(id, callback)`
-
-* `countIndex(criteria, callback)` === `count(criteria, callback)`
-
-* `bulk(body, callback)`
-
-* `client()`
-
-+ **returns**
-  + Elasticsearch client instance to call methods directly to elasticsearch API. You can find API reference [here](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/api-reference.html)
-
-### TODO
-
-Fully support Semantic and Queryable interfaces.
-
+![image_squidhome@2x.png](http://i.imgur.com/RIvu9.png)
